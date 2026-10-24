@@ -1,0 +1,14 @@
+# ROS 2 build outputs
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# VS Code / OS settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+.DS_Store

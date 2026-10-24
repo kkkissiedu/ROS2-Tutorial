@@ -1,0 +1,25 @@
+{
+  "name": "ROS 2 Humble Robot Workspace",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-iot.vscode-ros",
+        "ms-vscode.cpptools",
+        "ms-python.python",
+        "redhat.vscode-xml"
+      ]
+    }
+  },
+  "runArgs": [
+    "--privileged",
+    "--net=host"
+  ],
+  "containerEnv": {
+    "DISPLAY": "host.docker.internal:0"
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace"
+}
