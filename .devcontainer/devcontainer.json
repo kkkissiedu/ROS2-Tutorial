@@ -3,6 +3,45 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "remoteUser": "ros",
+  "containerUser": "ros",
+
+  // Lets gdb attach to running ROS nodes (the one thing --privileged was giving for free)
+  "capAdd": ["SYS_PTRACE"],
+
+  // Source lives on a Docker volume (native Linux disk) instead of a Windows bind mount.
+  // The volume starts empty on a new machine. Seed it once, then reopen in the container:
+  //   docker run --rm -u root -v ros2-ws:/workspace alpine/git clone https://github.com/kkkissiedu/ROS2-Tutorial.git /workspace
+  //   docker run --rm -u root -v ros2-ws:/workspace alpine chown -R 1000:1000 /workspace
+  "workspaceMount": "source=ros2-ws,target=/workspace,type=volume",
+  "workspaceFolder": "/workspace",
+
+  // --gpus all: RTX GPU for RViz/Gazebo (needs Docker Desktop WSL2 backend + NVIDIA driver)
+  // --net=host: ROS 2 discovery. No --privileged; for USB devices later pass --device explicitly.
+  "runArgs": [
+    "--net=host",
+    "--gpus=all",
+    "--shm-size=1g",
+    "--device=/dev/dxg"
+  ],
+
+  // WSLg display + WSL GPU libraries (paths are inside Docker Desktop's VM)
+  "mounts": [
+    "source=/run/desktop/mnt/host/wslg/.X11-unix,target=/tmp/.X11-unix,type=bind",
+    "source=/run/desktop/mnt/host/wslg,target=/mnt/wslg,type=bind",
+    "source=/usr/lib/wsl,target=/usr/lib/wsl,type=bind,readonly"
+  ],
+
+  "containerEnv": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir",
+    "PULSE_SERVER": "/mnt/wslg/PulseServer",
+    "LD_LIBRARY_PATH": "/usr/lib/wsl/lib",
+    "MESA_D3D12_DEFAULT_ADAPTER_NAME": "NVIDIA",
+    "GALLIUM_DRIVER": "d3d12"
+  },
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,14 +51,5 @@
         "redhat.vscode-xml"
       ]
     }
-  },
-  "runArgs": [
-    "--privileged",
-    "--net=host"
-  ],
-  "containerEnv": {
-    "DISPLAY": "host.docker.internal:0"
-  },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
-  "workspaceFolder": "/workspace"
+  }
 }
