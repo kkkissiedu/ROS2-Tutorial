@@ -24,7 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            "example_node_executable = my_new_package.node_example:main"
+            "example_node_executable = my_new_package.node_example:main",
+            "example_custom_move_turtle = my_new_package.move_turtle:main",
         ],
     },
 )
